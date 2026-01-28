@@ -1,394 +1,193 @@
-# VHMA 3000 — SW Design and Coding Manual (4th issue, 11/2025)
+General requirements
 
----
+* The code shall be MISRA C:2012 compliant. Compliance with Advisory rules is not mandatory, but recommended.
+* The code shall respect the HIS metrics defined in Annex 1.
+* The code shall be documented so it can be parsed by Doxygen (used by VHIT/EAD).
 
-## General coding guidelines
+SDCM_0002 — Comments in C source code
 
-All the rules listed in the next paragraphs can be classified as derivatives of the following macro‑rules:
+* Allowed comment styles are: /* ... */ and //.
+* Code sections that are not self-explanatory shall be extended with meaningful comments.
+* Source code comments shall be written in English.
+* Comments shall be aligned with the code they refer to.
+* Nesting of comments is not allowed (tools may interpret nested comments differently).
+* Meaningful comments shall follow Doxygen style.
 
-- **The code shall be maintainable and easy to read**  
-  As code will be further developed from other developers no error‑prone or difficult to understand code shall be implemented.
+Programming guide
 
-- **The code shall be compiler independent as far as possible**  
-  Code re‑use (especially core modules) shall be maximized.
+Preprocessor directives
+SDCM_0003 — Numeric constants
 
-- **The code shall be microcontroller independent as far as possible**  
-  Code re‑use (especially core modules) shall be maximized.  
-  The rule is particularly intended for Application SW, whose interfaces toward uC shall be kept separated in a different file. Device drivers are excluded for obvious reasons.
+* Use macros for symbolic numeric constants.
 
-- **The code shall be MISRA 2012 compliant**  
-  Advisory rules compliance is not mandatory but recommended.
+SDCM_0004 — Function-like macros
 
-- **The code shall respect the metrics (HIS) available in Annex 1**
+* Avoid function-like macros unless they provide a significant performance improvement.
+* If possible, use inline functions instead of function-like macros.
+* Note: function remapping is not affected (it may improve reusability and configurability).
 
-- **The code shall be documented in a way to be parsed by Doxygen**
-  Doxygen is a powerful tool to document the code and is used by VHIT/EAD for this purpose.
+SDCM_0005 — Macros usage
 
----
+* Macros may be used to: access structures, generate bit masks, or perform small and easy logical or mathematical operations.
+* Macros shall not replace C language keywords or constructs (readability and maintainability).
+* If the macro is not only a symbolic numeric constant, enclose both macro body and macro parameters in parentheses.
+* Macro calls shall not end with a semicolon; semicolons must be placed outside the macro.
 
-## Style guide
+Function prototypes
+SDCM_0006 — Interface visibility
 
-#### SDCM_0001 — File header information
+* Separate interfaces into public and private header files and make visibility explicit through file naming.
+* Example: define private interfaces in *_priv.h.
 
-**Description:** Every source file shall be headed by the standard header file.
+Const
+SDCM_0009 — Constant variables
 
-**Example:**
+* Variables and parameters that will not change shall be declared with the const qualifier.
 
-```c
-/***************************************************************************//**
- * \file           file_name.c
- * \brief          Description
- * \author         EAD13 SW Team – Author
- * \date           01/01/2026
- *
- * \par            Copyright (c) 2026, VHIT S.p.A. All rights reserved
- * 
- * \defgroup       ModuleName    Group Name
- * @{
- ******************************************************************************/
-```
+SDCM_0010 — Function inputs
 
----
+* Function inputs are constant within the function scope, so they shall be declared with the const qualifier.
 
-#### SDCM_0002 — Comments in C source code
+Local variables
+General rule
 
-- Following comment marks are allowed: `/* ... */` and `//`.
-- Code sections that are not self‑explanatory shall be extended by a meaningful comment.
-- Comments in the source code shall be written in English.
-- The comment is aligned at the code to which it belongs.
-- Nesting of comments is not allowed. Tools might handle nested comments in a different way.
-- Meaningful comments shall follow Doxygen style.
+* Use different local variables for different use cases within a function; re-use is error-prone and shall be avoided.
+* Using multiple locals should not significantly impact resources because compilers can optimize and often place locals in registers.
 
----
+SDCM_0011 — Local variables name
 
-## Programming guide
+* Local variable names shall start with the prefix l_ followed by a meaningful name.
 
-### Preprocessor directives
+SDCM_0012 — Local variables usage
 
-#### SDCM_0003 — Numeric constants
+* Do not re-use variables for different purposes.
 
-**Description:** Macros shall be used for symbolic numeric constants.  
+SDCM_0013 — Local variables type
 
----
+* Local variables type shall always be 32-bit; avoid smaller types.
+* Arm compilers produce more efficient code using 32-bit variables.
+* Avoid stack growth by reducing call hierarchy depth and considering that Arm compilers use registers (if available) for locals.
 
-#### SDCM_0004 — Function‑like macros
+Data types
+SDCM_0014 — Data type for persistent variables
 
-**Description:** Function‑like macros shall be avoided unless they provide a significant improvement in terms of performance. Anyway, if possible, inline functions shall be used instead of function‑like macro.
+* For storage-using variables (global, static, parameters), use the smallest integer type that covers the required value range.
 
-**Note:** Function remapping is not affected by this rule. It allows advantages in terms of reusability and configurability.  
+SDCM_0016 — Positive types
 
----
+* If the variable can only take positive values, choose an unsigned type.
 
-#### SDCM_0005 — Macros usage
+SDCM_0017 — Floating point
 
-- Macros can be used to realize accesses to structures, generate bit masks or to realize small and easy logical or mathematical operations.
-- Macros must not be used to replace keywords or constructs of the language C. This is required for readability and maintainability of the code.
-- Macro body and macro parameters must be enclosed in parentheses (if macro is not only a define for a symbolic numeric constants).
-- Every macro call shall not be completed with a semicolon; semicolons have to be set outside the macro.
+* Use floating point types only if strictly necessary.
+* This rule does not apply to microcontrollers equipped with an FPU.
 
----
+SDCM_0018 — Bit masks
 
-### Function prototypes
+* For bit masks or bit strings, use an unsigned type.
 
-#### SDCM_0006 — Interface visibility
+SDCM_0019 — Bit fields type
 
-**Description:** Separate interfaces into public and private header files and make the visibility explicit by naming of the source file.  
-Example: define all private interfaces in `*_priv.h` and `*_api.h` for global.  
+* Bitfields shall be declared as int (or equivalent) type.
+* Note from compiler vendors: using int-sized variables can improve runtime and code size (~5% better code density and similar runtime improvement). Consider this primarily for highly efficient code (e.g., centrally called services). For normal application software, follow size/signedness rules to save RAM (often the critical resource).
 
----
+User-defined data types (typedefs)
+SDCM_0020 — Project specific typedefs
 
-#### SDCM_0007 — Function declaration
+* Do not create project-specific typedefs that redefine existing standard types.
 
-**Description:** Every function shall have a function declaration in the corresponding header file (C++ compatibility).  
+SDCM_0021 — Bit fields
 
----
+* For portability, avoid C bit fields unless strictly necessary.
 
-#### SDCM_0008 — Function prototype identifiers
+SDCM_0022 — Unions
 
-**Description:** Function prototype declarations shall contain also the parameter identifiers to increase readability and maintainability of the code.  
+* For portability, avoid unions when possible.
+* Hint: if unions are needed (e.g., register access), encapsulate them in an abstraction layer.
 
----
+Compiler independency / Constructs
+SDCM_0024 — Constructs
 
-### Const
+* The code shall be compiler independent for portability across microcontrollers and compilers.
 
-#### SDCM_0009 — Constant variables
+SDCM_0023 — Compiler independency
 
-**Description:** Variables and parameters that will not change shall be declared with `const` qualifier.  
+* Same requirement: for portability reasons, the code shall be compiler independent and reusable on different uCs/compilers.
 
----
+Statements
+SDCM_0025 — Likely-first ordering in selections
 
-#### SDCM_0010 — Function inputs
+* In selection statements (e.g., if-else), place the most likely condition first, then others in decreasing likelihood.
 
-**Description:** Function inputs are constant in the function scope, so they shall be declared with `const` qualifier.  
+SDCM_0028 — Bounded iterations
 
----
+* Loops (for/while/do-while) shall have a predetermined maximum number of iterations.
+* Exceptions are allowed only with proper justification.
 
-### Local variables
+SDCM_0030 — Timeouts in event-waiting loops
 
-For different use cases in a function, different local variables shall be used. Re‑use of local variables is error‑prone and shall be avoided. Use several local variables shouldn’t impact too much the resources usage because compiler can optimize the code based on register variables. In most cases, local variables are located in registers of the processor.
+* Event-waiting loops shall include a timeout that breaks the loop.
+* If the timeout occurs, the resulting behavior shall be handled.
 
-#### SDCM_0011 — Local variables name
+SDCM_0031 — Inequalities for loop termination
 
-**Description:** Local variable names shall start with the prefix `l_` followed by a meaningful name.  
+* Loop termination conditions shall use inequalities (<, <=, >, >=).
+* Include a plausibility check for the range.
 
----
+Additional commenting requirements
+SDCM_0026 — Comment complex computations
 
-#### SDCM_0012 — Local variables usage
+* Comment computations that involve at least five variables/parameters, explaining meaning or logic.
 
-**Description:** Don’t re‑use variables for different purposes.  
+SDCM_0027 — Comment each variable definition
 
----
+* Each variable definition must be commented with its meaning and usage.
 
-#### SDCM_0013 — Local variables type
+SW behavior
+SDCM_0029 — Reset vector jumps
 
-**Description:** Local variables type shall always be 32 bit. Avoid to use smaller types. Arm compiler produce more efficient code using 32 bit variables.
+* Jumps to the Reset Vector shall not be used.
+* Exceptions are allowed only if properly justified.
 
-The possible increase of stack usage shall be avoided reducing the calling hierarchy depth and considering that Arm compiler uses registers (if available) for local variables.
+Global interrupt disable handling
+SDCM_ISR_008 — Ensure re-enable
 
----
+* Ensure no exception, error, or unexpected control flow can prevent re-enabling interrupts after a critical section.
 
-### Data types
+SDCM_ISR_009 — Keep critical sections simple
 
-#### SDCM_0014 — Data type for persistent variables
+* When global interrupts are disabled, the protected code block shall not contain conditional branches, loops, or function calls that could delay or prevent timely re-enabling.
 
-**Description:** The smallest integer type which holds the required value range shall be used for variables which use storage (global variables, static variables, parameters).  
+SDCM_ISR_010 — Minimize disable duration
 
----
+* Minimize the interrupt-disable duration and do not exceed the maximum allowed blocking time defined by system timing constraints.
 
-#### SDCM_0015 — 64‑bit types
+SDCM_ISR_011 — Mark critical sections
 
-**Description:** 64‑bit integer shall be avoided (we are on a 32‑bit architecture) or used only in exceptional cases.  
+* Clearly mark each interrupt-disabled code block with start and end comments.
 
----
+SDCM_ISR_012 — Review/justify uses
 
-#### SDCM_0016 — Positive types
+* All uses of global interrupt disable shall be reviewed and explicitly justified.
 
-**Description:** If the possible value range of the variable are only positive values, then an unsigned type should be chosen.  
+Annex 1 — HIS source code metrics (C; apply analogously to other languages)
+General
 
----
+* If metric deviations/boundary violations are required for project-specific reasons, evaluate them at unit level and document clear justifications.
+* If deviations/violations occur, apply appropriate measures to ensure software quality.
 
-#### SDCM_0017 — Floating point
+Metrics and limits
 
-**Description:** Floating point type shall be used only if they are strictly necessary. This rule shall not be applied for uCs equipped with a FPU.  
+* COMF: comment-to-statement ratio (outside and inside functions) must be > 0.2. Applies to manually written code; not applied to automatically generated code.
+* PATH: number of non-cyclic execution paths must be <= 80. Tools may overestimate; if violated, demonstrate the real result.
+* GOTO: number of unconditional jumps must be 0.
+* v(G): cyclomatic complexity must be <= 10.
+* PARAM: number of function parameters must be <= 5.
+* STMT: number of statements per function must be <= 50 and > 0. Some violations may be justified by design choices; provide justification if needed.
+* LEVEL: maximum nesting level inside a function must be <= 4.
+* RETURN: number of return statements per function must be 0 or 1.
+* Recursions: number of recursions must be 0.
+* VOCF: vocabulary frequency must be <= 4. May be violated due to specific design choice; provide proper justification.
 
----
+Purpose for LLM-based unit generation
 
-#### SDCM_0018 — Bit masks
-
-**Description:** For variables which hold bit masks or bit strings an unsigned type shall be used.  
-
----
-
-#### SDCM_0019 — Bit fields type
-
-**Description:** Bitfields shall be declared as `int` (or its equivalent) type.  
-
-> From compiler manufacturer you may find following statements:  
-> “In general, the use of the variables of size int is beneficial for both the run time and code size. The effect is about 5% better code density and a similar run time improvement.”  
-> This statement should only be taken into account in case when highly efficient code shall be written regarding run time and code (e.g. centrally called services). For normal application software the rules for size and signedness shall be followed in order to save RAM, which in most cases is the more critical resource.
-
----
-
-### User defined data types — typedefs
-
-#### SDCM_0020 — Project specific typedefs
-
-**Description:** Project specific typedefs shall not be used to define new names for the existing standard types.  
-
----
-
-#### SDCM_0021 — Bit fields
-
-**Description:** For portability reasons C bit fields should not be used, unless they are strictly necessary.  
-
----
-
-#### SDCM_0022 — Unions
-
-**Description:** For portability reasons, unions shall be avoided when possible.
-
-**Hint:** if unions are needed (e.g. to access registers) encapsulate them in an abstraction layer.  
-
----
-
-### Constructs
-
-#### SDCM_0024 — Constructs
-
-**Description:** For portability reasons, the code shall be compiler independent. VHIT code could be potentially used for different uCs and compiled with different compilers.  
-
----
-
-### Statements
-
-#### SDCM_0025 — Likely‑first ordering in selections
-
-**Description:** In selection statements (e.g., if‑else), the more likely condition should be placed in the first clause, followed by other conditions in descending order of likelihood.  
-
----
-
-#### SDCM_0028 — Bounded iterations
-
-**Description:** Iteration statements (for, while, do‑while) shall have a predetermined maximum number of iterations. Exceptions are allowed only with a proper justification.  
-
----
-
-#### SDCM_0030 — Timeouts in event‑waiting loops
-
-**Description:** Iteration statements waiting for an event shall have a timeout breaking the loop. If the timeout occurs, the behavior shall be handled.  
-
----
-
-#### SDCM_0031 — Inequalities for loop termination
-
-**Description:** All iterative loop terminations shall use inequalities (`<`, `<=`, `>`, `>=`) and there shall be a check for range plausibility.  
-
----
-
-### Comments
-
-#### SDCM_0026 — Comment complex computations
-
-**Description:** The source code must be commented on all computations that include at least five variables or parameters about the meaning or logic.  
-
----
-
-#### SDCM_0027 — Comment each variable definition
-
-**Description:** Each variable definition must be commented with its meaning and usage.  
-
----
-
-### Compiler Independency
-
-#### SDCM_0023 — Compiler independency
-
-**Description:** For portability reasons, the code shall be compiler independent. VHIT code could be potentially used for different uCs and compiled with different compilers.  
-
----
-
-### SW Behavior
-
-#### SDCM_0029 — Reset vector jumps
-
-**Description:** Jumps to the Reset Vector shall not be used. Exceptions to the rule are allowed only if properly justified.  
-
----
-
-## Interrupt Service Routines (ISR)
-
-### ISR Design and Execution
-
-#### SDCM_ISR_001 — Deterministic ISR duration
-
-**Description:** An Interrupt Service Routine (ISR) shall execute in a deterministic and time‑bounded manner, not exceeding the maximum allowed execution time defined by system timing constraints.  
-
----
-
-#### SDCM_ISR_002 — Avoid blocking/time‑consuming operations
-
-**Description:** The ISR shall not contain blocking or time‑consuming operations, including dynamic memory allocation, I/O operations, or delay loops.  
-
----
-
-#### SDCM_ISR_003 — Minimal ISR processing
-
-**Description:** The ISR shall only perform minimal processing and shall defer complex logic to background tasks via signaling mechanisms, optimizing it by time execution.  
-
----
-
-### Shared Data and Concurrency
-
-#### SDCM_ISR_004 — Volatile shared variables
-
-**Description:** All variables shared between ISRs and non‑interrupt code shall be declared with the `volatile` keyword to prevent compiler optimization issues.  
-
----
-
-#### SDCM_ISR_005 — Protect shared resources
-
-**Description:** Access to shared resources between ISRs and main code shall be protected using atomic operations or critical sections to prevent race conditions.  
-
----
-
-#### SDCM_ISR_006 — Avoid priority inversion
-
-**Description:** Interrupt nesting and priority levels shall be configured to avoid priority inversion and ensure timely execution of critical ISRs.  
-
----
-
-#### SDCM_ISR_007 — Document ISRs
-
-**Description:** All ISRs shall be documented with their expected behavior, priority, and fault handling strategy.  
-
----
-
-### Global Interrupt Disable Handling
-
-#### SDCM_ISR_008 — Ensure re‑enable
-
-**Description:** The system shall ensure that no exception, error, or unexpected control flow can prevent the re‑enabling of interrupts after a critical section.  
-
----
-
-#### SDCM_ISR_009 — Keep critical sections simple
-
-**Description:** When global interrupts are disabled to protect critical sections, the code block shall not contain any conditional branches, loops, or function calls that could delay or prevent timely re‑enabling of interrupts.  
-
----
-
-#### SDCM_ISR_010 — Minimize disable duration
-
-**Description:** The duration of global interrupt disable shall be minimized and shall not exceed the maximum allowed blocking time defined by system timing constraints.
-
----
-
-#### SDCM_ISR_011 — Mark critical sections
-
-**Description:** Each code block where global interrupts are disabled shall be clearly marked with comments indicating the start and end of the critical section.
-
----
-
-#### SDCM_ISR_012 — Review/justify uses
-
-**Description:** All uses of global interrupt disable shall be reviewed and explicitly justified.
-
----
-
-## Annex 1 — Code metrics
-
-### Source Code Metrics
-
-The source code metrics are valid for the programming language **C**. These must be adopted analogously for other programming languages.
-
-If source code metric deviations or boundary value violations are necessary because of project specific reasons, these must be evaluated on unit level and documented including comprehensible justifications.
-
-In case of source code metric deviations or boundary value violations appropriate measures must be applied to ensure the software quality.
-
-**Metrics and limits**
-
-- **COMF** — Ratio between the number of comments (outside and inside the functions) to the number of statements must be **greater than 0.2**.  
-  This requirement is applied for source code manually written; for code automatically generated the rule will not be applied.
-
-- **PATH** — Number of non‑cyclic execution paths must be **≤ 80**.  
-  Static analysis tools overestimate real paths; in case of violation, the result shall be demonstrated.
-
-- **GOTO** — Number of unconditional jumps must be **0**.
-
-- **v(G)** — Cyclomatic complexity must be **≤ 10**.
-
-- **PARAM** — Number of function parameters must be **≤ 5**.
-
-- **STMT** — Number of statements in a function must be **≤ 50 and > 0**.  
-  Some violations can be justified by particular design choices; provide justification if needed.
-
-- **LEVEL** — Number of nested levels inside a function must be **≤ 4**.
-
-- **RETURN** — Number of return statements in a function must be **0 or 1**.
-
-- **Recursions** — Number of recursions must be **0**.
-
-- **VOCF** — Vocabulary frequency must be **≤ 4**.  
-  It can be violated due to a specific design choice; provide proper justification.
-
----
