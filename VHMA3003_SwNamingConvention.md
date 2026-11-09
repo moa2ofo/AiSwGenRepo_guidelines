@@ -16,17 +16,11 @@ Applies to both `.h` and `.c` (extension excluded).
 
 #### Description of `<modulename>`
 
-Identifies the module. All files in same module share the same `<modulename>`. It is composed by words/keywords in **PascalCasing**.
-
-If a word appears in Table 5, its keyword must be used.
+Identifies the module. All files in same module share the same `<modulename>`. It is composed by keywords in **PascalCasing**.
 
 #### Description of `<_optional>`
 
-Optional role descriptor. If used:
-
-- single word/keyword
-- first letter capital, remainder lower case
-- keyword substitution rules as above
+Optional role descriptor. If used, must be composed by keywords listed in Table 5 in **PascalCasing**.
 
 ---
 
@@ -54,7 +48,7 @@ Casing depends on storage class (Table 6):
 - **PascalCasing** → static variables
 - **camelCasing** → non‑static variables
 
-Keywords substitution follows Table 2 & Table 5.
+Keywords substitution follows Table 5.
 
 #### Description of `<_datatype>`
 
@@ -62,15 +56,30 @@ Indicates data type + dynamic behavior.
 
 Structure:
 
-`_<pointerqualifier><pointer><typequalifier><type>`
+`_<datatype>`
 
-Exception: void / pointer‑to‑void → N/A.
+Recursive definition:
+
+```text
+<datatype> ::= <pointerqualifier><pointer><datatype>
+             | <typequalifier><type>
+```
+
+Apply the rule starting from the variable's declared type:
+
+- If the current type is a pointer, append `<pointerqualifier>` and `p`, then apply the rule again to the pointed-to type.
+- If the current type is an array, append `a`, then apply the rule again to the element type.
+- Otherwise, append `<typequalifier><type>` and stop.
+
+Each qualifier applies only to the type at the current recursion level. Append `_` only once, before the complete sequence.
+
+Exception: void / pointer-to-void → N/A.
 
 - `<pointerqualifier>`: `v` volatile pointer, `c` const pointer, `r` restrict pointer, else N/A
-- `<pointer>`: `p` if pointer, else N/A
+- `<pointer>`: `p` if pointer, `a` if array, else N/A
 - `<typequalifier>`: `v` volatile, `c` const, else N/A
 - `<type>`:
-  - `b`, `u8`, `u16`, `u32`, `s8`, `s16`, `s32`
+  - `b`, `u8`, `u16`, `u32`, `s8`, `s16`, `s32`, `f`, `d`
   - N/A for user‑defined types
 
 ---
@@ -100,14 +109,9 @@ Keyword substitution as usual.
 
 #### Description of `<_returntype>`
 
-Structure:
+Indicates the data type + dynamic behavior of the returned object.
 
-`_<pointer><type>`
-
-Exception: void / pointer‑to‑void → N/A.
-
-- `<pointer>`: `p` if pointer return, else N/A
-- `<type>`: same set as variables
+Structure: same as `_<datatype>`.
 
 ---
 
@@ -126,7 +130,7 @@ Two categories (Table 8):
 
 #### Description of `<constructname>`
 
-camelCasing, with usual keyword substitution.
+PascalCasing, with usual keyword substitution.
 
 #### Description of `<constructtype>`
 
@@ -146,9 +150,7 @@ camelCasing, with usual keyword substitution.
 
 #### Description of `<_datatype>`
 
-Same structure and rules as variables:
-
-`_<pointerqualifier><pointer><typequalifier><type>`
+Same structure and rules as variables.
 
 ---
 
@@ -184,31 +186,31 @@ SNAKE_CASING, with usual keyword substitution.
 | Buf | Buffer |
 | Cfg | Configure, Configuration |
 | Clr | Clear |
+| Ctrl | Control, Controller |
 | Diag | Diagnostic |
 | Err | Error |
-| Flg | Flag |
-| Get | Get |
 | If | Interface |
 | Man | Manager |
+| Mcu | Microcontroller |
 | Mdl | Module |
+| Meas | Measure, Measurement |
 | Mon | Monitor, Monitoring |
-| Rd | Read |
-| Run | Run |
+| Rqst | Request |
 | Rx | Receive, Reception |
-| Stop | Stop |
-| Tst | Test |
+| Schd | Schedule, Scheduler |
+| Sts | Status |
 | Tx | Transmit, Transmission |
-| Sch | Schedule |
-| Set | Set |
+| Upd | Update |
 | Warn | Warning |
-| Word | Word |
-| Wr | Write |
+| Writ | Write |
+
+Words that are shorter than 5 letters are not abbreviated.
 
 #### Table 6 — Variable scope categories
 
 | Variable scope category | `<scope_>` | `<variablename>` casing |
 |---|---|---|
-| Global (extern) | `g_` | camelCasing |
+| Global (extern) | `g_` | PascalCasing |
 | Global static (file‑static) | N/A | PascalCasing |
 | Local | `l_` | camelCasing |
 | Local static (function‑static) | `l_` | PascalCasing |
@@ -225,8 +227,8 @@ SNAKE_CASING, with usual keyword substitution.
 
 | Construct scope category | `<scope_>` | `<constructname>` casing |
 |---|---|---|
-| Global (hfile‑declared) | `<modulename>_` | camelCasing |
-| Local (cfile‑declared) | N/A | camelCasing |
+| Global (hfile‑declared) | `<modulename>_` | PascalCasing |
+| Local (cfile‑declared) | N/A | PascalCasing |
 
 #### Table 9 — Construct entities
 
