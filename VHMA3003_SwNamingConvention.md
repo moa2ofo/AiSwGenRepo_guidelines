@@ -177,30 +177,116 @@ SNAKE_CASING, with usual keyword substitution.
 
 | Keyword | Full word |
 | --- | --- |
+| Ab | Alpha-Beta |
+| Abs | Absolute |
+| Acq | Acquire, Acquisition |
+| Adc | Analog-to-Digital Converter |
+| Algn | Align, Aligned, Alignment |
 | Alv | Alive |
+| Amb | Ambient |
+| Amp | Amplitude |
+| Ang | Angle |
 | Appl | Application |
+| Arbt | Arbiter |
 | Buf | Buffer |
 | Cfg | Configure, Configuration |
+| Cl | Closed-Loop |
+| Clbk | Callback |
 | Clr | Clear |
+| Cmpt | Compute, Computation |
+| Cnt | Count, Counter |
+| Cs | Chip Select |
 | Ctrl | Control, Controller |
+| Curr | Current |
+| Cycl | Cycle, Cyclic |
+| Dc | Direct Current |
+| Dert | Derate, Derating |
 | Diag | Diagnostic |
+| Dis | Disable |
+| Dly | Delay, Delayed |
+| Dq | Direct-Quadrature |
+| Ecu | Electronic Control Unit |
+| En | Enable |
 | Err | Error |
+| Estm | Estimate, Estimator, Estimation |
+| Ev | Event |
+| Exec | Execute, Execution |
+| Fctr | Factor |
+| Ffw | Feedforward |
+| Flux | Flux |
+| Folw | Follow, Following |
+| Gen | Generate, Generator, Generation |
 | If | Interface |
+| Ind | Inductance |
+| Init | Initialize, Initialization |
+| Invt | Inverter |
+| Kd | Derivative Gain |
+| Ki | Integral Gain |
+| Kp | Proportional Gain |
+| Lim | Limit |
 | Man | Manager |
-| Mcu | Microcontroller |
-| Mdl | Module |
+| Max | Maximum |
+| Mcsm | Motor Control State Machine |
+| Mcu | Microcontroller Unit |
+| Mdul | Module |
 | Meas | Measure, Measurement |
+| Mgnt | Magnet |
+| Min | Minimum |
+| Mod | Module, Modulation |
 | Mon | Monitor, Monitoring |
+| Mot | Motor |
+| Motn | Motion |
+| Ntwk | Network |
+| Obs | Observe, Observer, Observation |
+| Ol | Open-Loop |
+| Perm | Permanent |
+| Phs | Phase |
+| Pos | Position |
+| Prcs | Process, Processing |
+| Prd | Period |
+| Pred | Predict, Predictor, Prediction |
+| Pwm | Pulse Width Modulation |
+| Queu | Queue |
+| Rchd | Reached |
+| Ref | Reference |
+| Reld | Reload |
+| Res | Resistance |
+| Rglt | Regulate, Regulator, Regulation |
 | Rqst | Request |
-| Rx | Receive, Reception |
+| Rst | Reset |
+| Rtor | Rotor |
+| Rx | Receive, Receiver, Reception |
 | Schd | Schedule, Scheduler |
+| Sens | Sense, Sensor, Sensing |
+| Serv | Service |
+| Setl | Settle, Settled, Settling |
+| Shnt | Shunt |
+| Smpl | Sample, Sampling |
+| Spd | Speed |
+| Spi | Serial Peripheral Interface |
+| Sply | Supply |
+| Ssc | Spread Spectrum Clocking |
+| Stor | Stator |
+| Strt | Start |
 | Sts | Status |
-| Tx | Transmit, Transmission |
+| Swtc | Switch, Switching |
+| Sync | Synchronize, Synchronizer, Synchronization |
+| Sys | System |
+| Temp | Temperature |
+| Tmp | Temporary |
+| Trgt | Target |
+| Trq | Torque |
+| Tsfm | Transform, Transformation |
+| Tx | Transmit, Transmitter, Transmission |
+| Undr | Under |
 | Upd | Update |
+| Volt | Voltage |
 | Warn | Warning |
+| Wd | Watchdog |
 | Writ | Write |
+| Xyz | X, Y, Z phases |
 
-Words that are shorter than 5 letters are not abbreviated.
+Words that are shorter than 5 letters are not abbreviated into a keyword.
 
 #### Table 6 — Variable scope categories
 
