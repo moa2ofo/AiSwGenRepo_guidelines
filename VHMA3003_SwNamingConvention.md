@@ -54,9 +54,7 @@ Keywords substitution follows Table 5.
 
 Indicates data type + dynamic behavior.
 
-Structure:
-
-`_<datatype>`
+Structure: `_<datatype>`. Exception: void / pointer-to-void → N/A.
 
 Recursive definition:
 
@@ -72,8 +70,6 @@ Apply the rule starting from the variable's declared type:
 - Otherwise, append `<typequalifier><type>` and stop.
 
 Each qualifier applies only to the type at the current recursion level. Append `_` only once, before the complete sequence.
-
-Exception: void / pointer-to-void → N/A.
 
 - `<pointerqualifier>`: `v` volatile pointer, `c` const pointer, `r` restrict pointer, else N/A
 - `<pointer>`: `p` if pointer, `a` if array, else N/A
@@ -151,6 +147,8 @@ camelCasing, with usual keyword substitution.
 #### Description of `<_datatype>`
 
 Same structure and rules as variables.
+
+Additionally, in case of bitfields, `<type>` must be `ix`, where `x` is the number of bits in the bitfield.
 
 ---
 
