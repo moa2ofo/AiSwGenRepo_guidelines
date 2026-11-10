@@ -1,7 +1,5 @@
 # VHMA 3003 — SW Naming Convention (3rd issue, 08/2023)
 
-# Content
-
 ## BSW — C language
 
 ---
@@ -16,11 +14,11 @@ Applies to both `.h` and `.c` (extension excluded).
 
 #### Description of `<modulename>`
 
-Identifies the module. All files in same module share the same `<modulename>`. It is composed by keywords in **PascalCasing**.
+Identifies the module. All files in same module share the same `<modulename>`. It must be composed by keywords in **PascalCasing**. Keywords substitution follows Table 5.
 
 #### Description of `<_optional>`
 
-Optional role descriptor. If used, must be composed by keywords listed in Table 5 in **PascalCasing**.
+Optional role descriptor. If used, must be composed by keywords in **PascalCasing**. Keywords substitution follows Table 5.
 
 ---
 
@@ -48,7 +46,7 @@ Casing depends on storage class (Table 6):
 - **PascalCasing** → static variables
 - **camelCasing** → non‑static variables
 
-Keywords substitution follows Table 5.
+Must use keywords listed in Table 5.
 
 #### Description of `<_datatype>`
 
@@ -86,7 +84,7 @@ Full function name:
 
 `<scope_><functionname><_returntype>`
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for functions
 
 Indicates scope + defining file.
 
@@ -117,7 +115,7 @@ Full construct name:
 
 `<scope_><constructname>_<constructtype>`
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for constructs
 
 Two categories (Table 8):
 
@@ -144,7 +142,7 @@ Full field name:
 
 camelCasing, with usual keyword substitution.
 
-#### Description of `<_datatype>`
+#### Description of `<_datatype>` for construct fields
 
 Same structure and rules as variables.
 
@@ -160,7 +158,7 @@ Full name:
 
 Exception: function‑like macros may follow this or function naming rules.
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for defines and enumerative cases
 
 Two categories (Table 10):
 
@@ -178,7 +176,7 @@ SNAKE_CASING, with usual keyword substitution.
 #### Table 5 — Keywords for C language
 
 | Keyword | Full word |
-|---|---|
+| --- | --- |
 | Alv | Alive |
 | Appl | Application |
 | Buf | Buffer |
@@ -207,7 +205,7 @@ Words that are shorter than 5 letters are not abbreviated.
 #### Table 6 — Variable scope categories
 
 | Variable scope category | `<scope_>` | `<variablename>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (extern) | `g_` | PascalCasing |
 | Global static (file‑static) | N/A | PascalCasing |
 | Local | `l_` | camelCasing |
@@ -217,21 +215,21 @@ Words that are shorter than 5 letters are not abbreviated.
 #### Table 7 — Function scope categories
 
 | Function scope category | `<scope_>` | `<functionname>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (extern or hfile‑static) | `<modulename>_` | PascalCasing |
 | Local (cfile‑static) | N/A | PascalCasing |
 
 #### Table 8 — Construct scope categories
 
 | Construct scope category | `<scope_>` | `<constructname>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (hfile‑declared) | `<modulename>_` | PascalCasing |
 | Local (cfile‑declared) | N/A | PascalCasing |
 
 #### Table 9 — Construct entities
 
 | Construct entity | `<constructtype>` |
-|---|---|
+| --- | --- |
 | Type definition (typedef) | `t` |
 | Struct (struct) | `s` |
 | Union (union) | `u` |
@@ -240,7 +238,7 @@ Words that are shorter than 5 letters are not abbreviated.
 #### Table 10 — Macro scope categories
 
 | Macro scope category | `<scope_>` | `<macroname>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (hfile‑defined) | `<MODULENAME>_` | SNAKE_CASING |
 | Local (cfile‑defined) | N/A | SNAKE_CASING |
 
