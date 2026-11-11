@@ -1,7 +1,5 @@
 # VHMA 3003 — SW Naming Convention (3rd issue, 08/2023)
 
-# Content
-
 ## BSW — C language
 
 ---
@@ -16,17 +14,11 @@ Applies to both `.h` and `.c` (extension excluded).
 
 #### Description of `<modulename>`
 
-Identifies the module. All files in same module share the same `<modulename>`. It is composed by words/keywords in **PascalCasing**.
-
-If a word appears in Table 5, its keyword must be used.
+Identifies the module. All files in same module share the same `<modulename>`. It must be composed by keywords in **PascalCasing**. Keywords substitution follows Table 5.
 
 #### Description of `<_optional>`
 
-Optional role descriptor. If used:
-
-- single word/keyword
-- first letter capital, remainder lower case
-- keyword substitution rules as above
+Optional role descriptor. If used, must be composed by keywords in **PascalCasing**. Keywords substitution follows Table 5.
 
 ---
 
@@ -54,23 +46,34 @@ Casing depends on storage class (Table 6):
 - **PascalCasing** → static variables
 - **camelCasing** → non‑static variables
 
-Keywords substitution follows Table 2 & Table 5.
+Must use keywords listed in Table 5.
 
 #### Description of `<_datatype>`
 
 Indicates data type + dynamic behavior.
 
-Structure:
+Structure: `_<datatype>`. Exception: void / pointer-to-void → N/A.
 
-`_<pointerqualifier><pointer><typequalifier><type>`
+Recursive definition:
 
-Exception: void / pointer‑to‑void → N/A.
+```text
+<datatype> ::= <pointerqualifier><pointer><datatype>
+             | <typequalifier><type>
+```
+
+Apply the rule starting from the variable's declared type:
+
+- If the current type is a pointer, append `<pointerqualifier>` and `p`, then apply the rule again to the pointed-to type.
+- If the current type is an array, append `a`, then apply the rule again to the element type.
+- Otherwise, append `<typequalifier><type>` and stop.
+
+Each qualifier applies only to the type at the current recursion level. Append `_` only once, before the complete sequence.
 
 - `<pointerqualifier>`: `v` volatile pointer, `c` const pointer, `r` restrict pointer, else N/A
-- `<pointer>`: `p` if pointer, else N/A
+- `<pointer>`: `p` if pointer, `a` if array, else N/A
 - `<typequalifier>`: `v` volatile, `c` const, else N/A
 - `<type>`:
-  - `b`, `u8`, `u16`, `u32`, `s8`, `s16`, `s32`
+  - `b`, `u8`, `u16`, `u32`, `s8`, `s16`, `s32`, `f`, `d`
   - N/A for user‑defined types
 
 ---
@@ -81,7 +84,7 @@ Full function name:
 
 `<scope_><functionname><_returntype>`
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for functions
 
 Indicates scope + defining file.
 
@@ -100,14 +103,9 @@ Keyword substitution as usual.
 
 #### Description of `<_returntype>`
 
-Structure:
+Indicates the data type + dynamic behavior of the returned object.
 
-`_<pointer><type>`
-
-Exception: void / pointer‑to‑void → N/A.
-
-- `<pointer>`: `p` if pointer return, else N/A
-- `<type>`: same set as variables
+Structure: same as `_<datatype>`.
 
 ---
 
@@ -117,7 +115,7 @@ Full construct name:
 
 `<scope_><constructname>_<constructtype>`
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for constructs
 
 Two categories (Table 8):
 
@@ -126,7 +124,7 @@ Two categories (Table 8):
 
 #### Description of `<constructname>`
 
-camelCasing, with usual keyword substitution.
+PascalCasing, with usual keyword substitution.
 
 #### Description of `<constructtype>`
 
@@ -144,11 +142,11 @@ Full field name:
 
 camelCasing, with usual keyword substitution.
 
-#### Description of `<_datatype>`
+#### Description of `<_datatype>` for construct fields
 
-Same structure and rules as variables:
+Same structure and rules as variables.
 
-`_<pointerqualifier><pointer><typequalifier><type>`
+Additionally, in case of bitfields, `<type>` must be `ix`, where `x` is the number of bits in the bitfield.
 
 ---
 
@@ -160,7 +158,7 @@ Full name:
 
 Exception: function‑like macros may follow this or function naming rules.
 
-#### Description of `<scope_>`
+#### Description of `<scope_>` for defines and enumerative cases
 
 Two categories (Table 10):
 
@@ -178,37 +176,123 @@ SNAKE_CASING, with usual keyword substitution.
 #### Table 5 — Keywords for C language
 
 | Keyword | Full word |
-|---|---|
+| --- | --- |
+| Ab | Alpha-Beta |
+| Abs | Absolute |
+| Acq | Acquire, Acquisition |
+| Adc | Analog-to-Digital Converter |
+| Algn | Align, Aligned, Alignment |
 | Alv | Alive |
+| Amb | Ambient |
+| Amp | Amplitude |
+| Ang | Angle |
 | Appl | Application |
+| Arbt | Arbiter |
 | Buf | Buffer |
 | Cfg | Configure, Configuration |
+| Cl | Closed-Loop |
+| Clbk | Callback |
 | Clr | Clear |
+| Cmpt | Compute, Computation |
+| Cnt | Count, Counter |
+| Cs | Chip Select |
+| Ctrl | Control, Controller |
+| Curr | Current |
+| Cycl | Cycle, Cyclic |
+| Dc | Direct Current |
+| Dert | Derate, Derating |
 | Diag | Diagnostic |
+| Dis | Disable |
+| Dly | Delay, Delayed |
+| Dq | Direct-Quadrature |
+| Ecu | Electronic Control Unit |
+| En | Enable |
 | Err | Error |
-| Flg | Flag |
-| Get | Get |
+| Estm | Estimate, Estimator, Estimation |
+| Ev | Event |
+| Exec | Execute, Execution |
+| Fctr | Factor |
+| Ffw | Feedforward |
+| Flux | Flux |
+| Folw | Follow, Following |
+| Gen | Generate, Generator, Generation |
 | If | Interface |
+| Ind | Inductance |
+| Init | Initialize, Initialization |
+| Invt | Inverter |
+| Kd | Derivative Gain |
+| Ki | Integral Gain |
+| Kp | Proportional Gain |
+| Lim | Limit |
 | Man | Manager |
-| Mdl | Module |
+| Max | Maximum |
+| Mcsm | Motor Control State Machine |
+| Mcu | Microcontroller Unit |
+| Mdul | Module |
+| Meas | Measure, Measurement |
+| Mgnt | Magnet |
+| Min | Minimum |
+| Mod | Module, Modulation |
 | Mon | Monitor, Monitoring |
-| Rd | Read |
-| Run | Run |
-| Rx | Receive, Reception |
-| Stop | Stop |
-| Tst | Test |
-| Tx | Transmit, Transmission |
-| Sch | Schedule |
-| Set | Set |
+| Mot | Motor |
+| Motn | Motion |
+| Ntwk | Network |
+| Obs | Observe, Observer, Observation |
+| Ol | Open-Loop |
+| Perm | Permanent |
+| Phs | Phase |
+| Pos | Position |
+| Prcs | Process, Processing |
+| Prd | Period |
+| Pred | Predict, Predictor, Prediction |
+| Pwm | Pulse Width Modulation |
+| Queu | Queue |
+| Rchd | Reached |
+| Ref | Reference |
+| Reld | Reload |
+| Res | Resistance |
+| Rglt | Regulate, Regulator, Regulation |
+| Rqst | Request |
+| Rst | Reset |
+| Rtor | Rotor |
+| Rx | Receive, Receiver, Reception |
+| Schd | Schedule, Scheduler |
+| Sens | Sense, Sensor, Sensing |
+| Serv | Service |
+| Setl | Settle, Settled, Settling |
+| Shnt | Shunt |
+| Smpl | Sample, Sampling |
+| Spd | Speed |
+| Spi | Serial Peripheral Interface |
+| Sply | Supply |
+| Ssc | Spread Spectrum Clocking |
+| Stor | Stator |
+| Strt | Start |
+| Sts | Status |
+| Swtc | Switch, Switching |
+| Sync | Synchronize, Synchronizer, Synchronization |
+| Sys | System |
+| Temp | Temperature |
+| Tmp | Temporary |
+| Trgt | Target |
+| Trq | Torque |
+| Tsfm | Transform, Transformation |
+| Tx | Transmit, Transmitter, Transmission |
+| Undr | Under |
+| Upd | Update |
+| Volt | Voltage |
 | Warn | Warning |
-| Word | Word |
-| Wr | Write |
+| Wd | Watchdog |
+| Writ | Write |
+| Xyz | X, Y, Z phases |
+
+Words that are shorter than 5 letters are not abbreviated into a keyword.
 
 #### Table 6 — Variable scope categories
 
 | Variable scope category | `<scope_>` | `<variablename>` casing |
-|---|---|---|
-| Global (extern) | `g_` | camelCasing |
+| --- | --- | --- |
+| Global (extern) | `g_` | PascalCasing |
 | Global static (file‑static) | N/A | PascalCasing |
 | Local | `l_` | camelCasing |
 | Local static (function‑static) | `l_` | PascalCasing |
@@ -217,21 +301,21 @@ SNAKE_CASING, with usual keyword substitution.
 #### Table 7 — Function scope categories
 
 | Function scope category | `<scope_>` | `<functionname>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (extern or hfile‑static) | `<modulename>_` | PascalCasing |
 | Local (cfile‑static) | N/A | PascalCasing |
 
 #### Table 8 — Construct scope categories
 
 | Construct scope category | `<scope_>` | `<constructname>` casing |
-|---|---|---|
-| Global (hfile‑declared) | `<modulename>_` | camelCasing |
-| Local (cfile‑declared) | N/A | camelCasing |
+| --- | --- | --- |
+| Global (hfile‑declared) | `<modulename>_` | PascalCasing |
+| Local (cfile‑declared) | N/A | PascalCasing |
 
 #### Table 9 — Construct entities
 
 | Construct entity | `<constructtype>` |
-|---|---|
+| --- | --- |
 | Type definition (typedef) | `t` |
 | Struct (struct) | `s` |
 | Union (union) | `u` |
@@ -240,7 +324,7 @@ SNAKE_CASING, with usual keyword substitution.
 #### Table 10 — Macro scope categories
 
 | Macro scope category | `<scope_>` | `<macroname>` casing |
-|---|---|---|
+| --- | --- | --- |
 | Global (hfile‑defined) | `<MODULENAME>_` | SNAKE_CASING |
 | Local (cfile‑defined) | N/A | SNAKE_CASING |
 
